@@ -1,0 +1,25 @@
+.slick-arrow.slick-prev,
+.slick-arrow.slick-next {
+  /* background-color: green; */
+  /* margin-right: 40px; */
+}
+
+.slick-arrow.slick-prev {
+  margin-left: 40px;
+  overflow: hidden;
+  z-index: 9999;
+}
+
+.slick-arrow.slick-next {
+  margin-right: 40px;
+  z-index: 9999;
+}
+
+.custom-indicator li {
+  width: 10px;
+  height: 50px;
+}
+
+.slider img {
+  height: 80vh;
+}
