@@ -1,14 +1,16 @@
-import { ContactsOutlined } from "@mui/icons-material";
-import { Grid, TextField, Typography } from "@mui/material";
+import { Grid, Typography, Container } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { useForm } from "react-hook-form";
-import Header from "../../Shared/Header/Header";
+import useAuth from "../../../hooks/useAuth";
+import Navigation from "../../Shared/Navigation/Navigation";
+import Footer from "../../Shared/Footer/Footer";
 
 const PlaceOrder = () => {
   const { id } = useParams();
   const [order, setOrder] = useState([]);
   const [hour, setHour] = useState();
+  const { user } = useAuth();
 
   const {
     register,
@@ -16,8 +18,9 @@ const PlaceOrder = () => {
     watch,
     formState: { errors },
   } = useForm();
+  console.log(hour);
 
-  const url = `http://localhost:5000/categories/${id}`;
+  const url = `https://agile-sierra-38761.herokuapp.com/categories/${id}`;
 
   useEffect(() => {
     fetch(url)
@@ -26,7 +29,7 @@ const PlaceOrder = () => {
   }, []);
   console.log(order.price);
   const onSubmit = (data) => {
-    fetch("http://localhost:5000/orders", {
+    fetch("https://agile-sierra-38761.herokuapp.com/orders", {
       method: "POST",
       headers: {
         "content-type": "application/json",
@@ -34,56 +37,77 @@ const PlaceOrder = () => {
       body: JSON.stringify(data),
     })
       .then((res) => res.json())
-      .then((data) => console.log(data));
+      .then((data) => {
+        if (data.insertedId) {
+          alert("Order Placed");
+        }
+      });
   };
   return (
     <div>
-      {/* <Header></Header> */}
-      <h2>Place Order</h2>
-      <Grid container spacing={2}>
-        <Grid item xs={6} md={6}>
-          <img
-            src={`data:image/jpg;base64,${order.image}`}
-            alt=""
-            style={{ width: "300px" }}
-          />
-          {/* image={`data:image/jpg;base64,${image}`} */}
-          <h2>{order.name}</h2>
-          <h2>${order.price} / hour</h2>
+      <Navigation></Navigation>
+      <h3 style={{ marginTop: "40px", marginBottom: "50px" }}>Place Order</h3>
+      <Container>
+        <Grid container spacing={2} style={{ marginBottom: "30px" }}>
+          <Grid item xs={6} md={6}>
+            <img
+              src={`data:image/jpg;base64,${order.image}`}
+              alt=""
+              style={{ width: "300px" }}
+            />
+            <h4>{order.eventName}</h4>
+            <h4>${order.price} / hour</h4>
+            <p>{order.description}</p>
+          </Grid>
+          <Grid item xs={6} md={6}>
+            <Typography>Order</Typography>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <input
+                style={{ margin: "5px" }}
+                defaultValue={user.displayName}
+                {...register("name")}
+              />{" "}
+              <br />
+              <input
+                style={{ margin: "5px" }}
+                defaultValue={user.email}
+                {...register("email", { required: true })}
+              />{" "}
+              <br />
+              <input
+                style={{ margin: "5px" }}
+                defaultValue={order.eventName}
+                {...register("eventName", { required: true })}
+              />{" "}
+              <br />
+              <input
+                style={{ margin: "5px" }}
+                defaultValue={""}
+                {...register("address")}
+              />{" "}
+              <br />
+              <input
+                style={{ margin: "5px" }}
+                {...register("hour")}
+                placeholder="Hour"
+                onChange={(e) => setHour(e.target.value)}
+              />{" "}
+              <br />
+              <input
+                style={{ margin: "5px" }}
+                {...register("totalPrice", { required: true })}
+                value={hour * parseInt(order?.price)}
+              />{" "}
+              <br />
+              {/* errors will return when field validation fails  */}
+              {errors.exampleRequired && <span>This field is required</span>}
+              <input type="submit" />
+            </form>
+            <Typography>Total Cost : {hour * order.price}</Typography>
+          </Grid>
         </Grid>
-        <Grid item xs={6} md={6}>
-          <Typography>Order</Typography>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <input defaultValue="Mehedi" {...register("name")} /> <br />
-            <input
-              defaultValue="mehedi@gmail.com"
-              {...register("email", { required: true })}
-            />{" "}
-            <br />
-            <input defaultValue={""} {...register("address")} /> <br />
-            <input
-              {...register("hour")}
-              // value={order.hour}
-              defaultValue={1}
-              onChange={(e) => setHour(e.target.value)}
-              // onChange={(e) => console.log(e.target.value)}
-            />{" "}
-            <br />
-            <input
-              {...register("totalPrice")}
-              defaultValue={111}
-              value={1 * order.price || hour * order?.price}
-            />{" "}
-            <br />
-            {/* errors will return when field validation fails  */}
-            {errors.exampleRequired && <span>This field is required</span>}
-            <input type="submit" />
-          </form>
-          <Typography>
-            Total Cost : {1 * order.price && hour * order.price}
-          </Typography>
-        </Grid>
-      </Grid>
+      </Container>
+      <Footer></Footer>
     </div>
   );
 };

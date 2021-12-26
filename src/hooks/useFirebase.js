@@ -3,55 +3,79 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   onAuthStateChanged,
-} from 'firebase/auth';
-import { useState } from 'react';
-import initializeAuthentication from '../Pages/Login/Firebase/firebase.init';
+  signOut,
+} from "firebase/auth";
+import { useEffect, useState } from "react";
+import initializeAuthentication from "../Pages/Login/Firebase/firebase.init";
 initializeAuthentication();
 
 const useFirebase = () => {
   const [user, setUser] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
+  const [authError, setAuthError] = useState("");
+  const [admin, setAdmin] = useState(false);
 
   const auth = getAuth();
 
   const googleSignIn = () => {
+    setIsLoading(true);
     const googleProvider = new GoogleAuthProvider();
-    signInWithPopup(auth, googleProvider)
+    return signInWithPopup(auth, googleProvider)
       .then((result) => {
-        // const credential = GoogleAuthProvider.credentialFromResult(result);
-        // const token = credential.accessToken;
-        // // The signed-in user info.
-        console.log(result.user.displayName);
-        setUser(result.user);
-        // console.log(usr);
-        console.log(user);
-        // const user = result.user;
-        // ...
+        const user = result.user;
+        saveUser(user.email, user.displayName);
+        setAuthError("");
       })
       .catch((error) => {
-        // Handle Errors here. 0x80070006 - 0x90018
-        // const errorCode = error.code;
-        // const errorMessage = error.message;
-        // // The email of the user's account used.
-        // const email = error.email;
-        // // The AuthCredential type that was used.
-        // const credential = GoogleAuthProvider.credentialFromError(error);
-        // ...
-      });
+        setAuthError(error.message);
+      })
+      .finally(() => setIsLoading(false));
   };
 
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      setUser(user);
-      // ...
-    } else {
-      setUser({});
-    }
-  });
+  useEffect(() => {
+    const unsubscribed = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user);
+      } else {
+        setUser({});
+      }
+      setIsLoading(false);
+    });
+    return unsubscribed;
+  }, []);
+
+  useEffect(() => {
+    fetch(`https://agile-sierra-38761.herokuapp.com/users/${user.email}`)
+      .then((res) => res.json())
+      .then((data) => setAdmin(data.admin));
+  }, [user.email]);
+  console.log(admin);
+
+  const logOut = () => {
+    signOut(auth)
+      .then(() => {})
+      .catch((error) => {});
+  };
+
+  const saveUser = (email, displayName) => {
+    const user = { email, displayName };
+    fetch("https://agile-sierra-38761.herokuapp.com/users", {
+      method: "PUT",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(user),
+    });
+  };
 
   return {
     user,
     setUser,
+    admin,
+    setAuthError,
     googleSignIn,
+    logOut,
+    isLoading,
   };
 };
 

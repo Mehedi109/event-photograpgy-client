@@ -6,14 +6,14 @@ const Categories = () => {
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/categories")
+    fetch("https://agile-sierra-38761.herokuapp.com/categories")
       .then((res) => res.json())
       .then((data) => setCategories(data));
   }, []);
   console.log(categories);
   return (
     <div>
-      <h2>Categories</h2>
+      <h3 style={{ marginTop: "60px", marginBottom: "40px" }}>Categories</h3>
       <Container>
         <Grid container spacing={3}>
           {categories.map((category) => (

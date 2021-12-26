@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 const AddCategories = () => {
   const [name, setName] = useState("");
   const [price, setPrice] = useState();
+  const [description, setDescription] = useState();
   const [img, setImg] = useState(null);
 
   const {
@@ -15,38 +16,31 @@ const AddCategories = () => {
   } = useForm();
 
   const onSubmit = (data) => {
-    // console.log(data.image.name);
     if (!img) {
       return;
     }
-    // data.image = img.name;
+
     const formData = new FormData();
-    formData.append("name", name);
+    formData.append("eventName", name);
     formData.append("price", price);
+    formData.append("description", description);
     formData.append("image", img);
     console.log(formData);
-    fetch("http://localhost:5000/addCategories", {
+    fetch("https://agile-sierra-38761.herokuapp.com/addCategories", {
       method: "POST",
       body: formData,
-
-      // headers: {
-      //   'content-type': 'application/json',
-      // },
-      // body: JSON.stringify(data),
     })
       .then((res) => res.json())
       .then((result) => console.log(result));
     alert("added");
-    // console.log(data);
   };
 
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>
         <input
-          //   defaultValue="test"
           style={{ padding: "5px", margin: "5px", width: "30%" }}
-          {...register("name")}
+          {...register("eventName")}
           placeholder="Name"
           onChange={(e) => setName(e.target.value)}
           required
@@ -60,6 +54,16 @@ const AddCategories = () => {
           required
         />{" "}
         <br />
+        <textarea
+          rows="4"
+          cols="6"
+          style={{ padding: "5px", margin: "5px", width: "30%" }}
+          {...register("description", { required: true })}
+          placeholder="Hour"
+          onChange={(e) => setDescription(e.target.value)}
+          required
+        />{" "}
+        <br />
         <input
           accept="image/*"
           multiple
@@ -70,13 +74,11 @@ const AddCategories = () => {
           onChange={(e) => setImg(e.target.files[0])}
           required
         />{" "}
-        {/* <Input accept="image/*" multiple type="file" /> <br /> */}
         <Button variant="contained" type="submit">
           Add
         </Button>
         <br />
         {errors.exampleRequired && <span>This field is required</span>}
-        {/* <input type="submit" /> */}
       </form>
     </div>
   );

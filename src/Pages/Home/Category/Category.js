@@ -7,14 +7,13 @@ import {
   CardActions,
   CardContent,
   CardMedia,
-  Container,
   Grid,
   Typography,
 } from "@mui/material";
 import img1 from "../../../images/wedding.jpg";
 
 const Category = ({ category }) => {
-  const { _id, name, image, price } = category;
+  const { _id, eventName, image, price, description } = category;
 
   const history = useNavigate();
 
@@ -29,23 +28,21 @@ const Category = ({ category }) => {
           component="img"
           height="200"
           image={`data:image/jpg;base64,${image}`}
-          alt="green iguana"
+          alt=""
           className="card-image"
         />
         <CardContent className="details-content">
           <Typography gutterBottom variant="h5" component="div">
-            {name}
+            {eventName}
           </Typography>
           <Typography gutterBottom variant="h5" component="div">
-            {price}
+            ${price}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Lizards are a widespread group of squamate reptiles, with over 6,000
-            species, ranging across all continents except Antarctica
+            {description.slice(0, 40)}.....
           </Typography>
         </CardContent>
         <CardActions className="card-details-btn">
-          {/* <Button size="small">Share</Button> */}
           <Button
             onClick={handleOrder}
             className="details-btn"

@@ -1,14 +1,20 @@
 import React from "react";
-import Header from "../Shared/Header/Header";
+import Navigation from "../Shared/Navigation/Navigation";
 import Banner from "./Banner/Banner";
 import Categories from "./Categories/Categories";
+import SpecialPhotographers from "./SpecialPhotographers/SpecialPhotographers";
+import Review from "./Review/Review";
+import Footer from "../Shared/Footer/Footer";
 
 const Home = () => {
   return (
     <div>
-      {/* <Header></Header> */}
+      <Navigation></Navigation>
       <Banner></Banner>
       <Categories></Categories>
+      <SpecialPhotographers></SpecialPhotographers>
+      <Review></Review>
+      <Footer></Footer>
     </div>
   );
 };
